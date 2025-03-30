@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duel Results | Trivizard Tournament</title>
+    <style>
+        /* Harry Potter Color Theme */
+        :root {
+            --gryffindor-red: #740001;
+            --gryffindor-gold: #d3a625;
+            --slytherin-green: #1a472a;
+            --slytherin-silver: #aaaaaa;
+            --ravenclaw-blue: #0e1a40;
+            --ravenclaw-bronze: #946b2d;
+            --hufflepuff-yellow: #ecb939;
+            --hufflepuff-black: #372e29;
+            --hogwarts-dark: #2c2c2c;
+            --parchment: #f5e7c1;
+        }
+
+        body {
+            background-color: var(--hogwarts-dark);
+            color: var(--parchment);
+            font-family: 'Cormorant Garamond', serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(212, 175, 55, 0.1) 50px,
+                    rgba(212, 175, 55, 0.1) 51px
+                );
+        }
+
+        .header {
+            text-align: center;
+            margin: 2rem 0;
+            width: 100%;
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            color: var(--gryffindor-gold);
+            text-shadow: 0 0 10px var(--gryffindor-red);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .results-container {
+            width: 90%;
+            max-width: 900px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--gryffindor-gold);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .score-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .score-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            width: 28%;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-top: 5px solid;
+        }
+
+        .correct {
+            border-top-color: #4CAF50;
+        }
+
+        .incorrect {
+            border-top-color: #F44336;
+        }
+
+        .skipped {
+            border-top-color: #9E9E9E;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .correct .score-value {
+            color: #4CAF50;
+        }
+
+        .incorrect .score-value {
+            color: #F44336;
+        }
+
+        .skipped .score-value {
+            color: #9E9E9E;
+        }
+
+        .score-label {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .house-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .house-badge {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid;
+        }
+
+        .house-name {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gryffindor-gold);
+        }
+
+        .final-score {
+            font-size: 2.5rem;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--gryffindor-gold);
+        }
+
+        .results-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gryffindor-gold);
+        }
+
+        .tab-button {
+            padding: 0.8rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--slytherin-silver);
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: var(--gryffindor-gold);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gryffindor-gold);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .question-result {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            background-color: rgba(30, 30, 30, 0.5);
+            position: relative;
+            border-left: 5px solid;
+        }
+
+        .question-result.correct {
+            border-left-color: #4CAF50;
+        }
+
+        .question-result.incorrect {
+            border-left-color: #F44336;
+        }
+
+        .question-result.skipped {
+            border-left-color: #9E9E9E;
+        }
+
+        .question-number {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--gryffindor-gold);
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .question-content {
+            margin-left: 45px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .answer-section {
+            margin-top: 0.5rem;
+        }
+
+        .answer-label {
+            font-style: italic;
+            color: var(--ravenclaw-bronze);
+        }
+
+        .user-answer {
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.3rem 0;
+            background-color: rgba(244, 67, 54, 0.2);
+            border: 1px solid #F44336;
+        }
+
+        .correct-answer {
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin: 0.3rem 0;
+            background-color: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+        }
+
+        .question-result.correct .user-answer {
+            background-color: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+        }
+
+        .question-result.skipped .user-answer {
+            display: none;
+        }
+
+        .difficulty-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .difficulty-easy {
+            color: var(--hufflepuff-yellow);
+        }
+
+        .difficulty-medium {
+            color: var(--ravenclaw-bronze);
+        }
+
+        .difficulty-hard {
+            color: var(--gryffindor-red);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            padding: 1rem 2rem;
+            font-family: 'Cinzel', serif;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            color: var(--parchment);
+            background-color: var(--gryffindor-red);
+            border: 2px solid var(--gryffindor-gold);
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .play-again {
+            background-color: var(--gryffindor-red);
+        }
+
+        .view-leaderboard {
+            background-color: var(--ravenclaw-blue);
+        }
+
+        /* House-specific styles */
+        .gryffindor-badge {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+            border-color: var(--gryffindor-gold);
+        }
+
+        .slytherin-badge {
+            background-color: var(--slytherin-green);
+            color: var(--slytherin-silver);
+            border-color: var(--slytherin-silver);
+        }
+
+        .ravenclaw-badge {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+            border-color: var(--ravenclaw-bronze);
+        }
+
+        .hufflepuff-badge {
+            background-color: var(--hufflepuff-yellow);
+            color: var(--hufflepuff-black);
+            border-color: var(--hufflepuff-black);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .score-summary {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .score-card {
+                width: 80%;
+                margin-bottom: 1rem;
+            }
+            
+            .results-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-button {
+                width: 80%;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">DUEL RESULTS</h1>
+    </div>
+
+    <div class="results-container">
+        <!-- House Banner -->
+        <div class="house-banner">
+            <div class="house-badge" id="playerBadge">🦁</div>
+            <div class="house-name" id="playerHouse">Gryffindor</div>
+        </div>
+
+        <!-- Final Score -->
+        <div class="final-score">
+            You scored <span id="finalScore">150</span> points!
+        </div>
+
+        <!-- Score Summary -->
+        <div class="score-summary">
+            <div class="score-card correct">
+                <div class="score-label">Correct Answers</div>
+                <div class="score-value" id="correctCount">12</div>
+                <div>Well done!</div>
+            </div>
+            <div class="score-card incorrect">
+                <div class="score-label">Incorrect Answers</div>
+                <div class="score-value" id="incorrectCount">5</div>
+                <div>Better luck next time!</div>
+            </div>
+            <div class="score-card skipped">
+                <div class="score-label">Skipped Questions</div>
+                <div class="score-value" id="skippedCount">3</div>
+                <div>Don't be shy!</div>
+            </div>
+        </div>
+
+        <!-- Results Tabs -->
+        <div class="results-tabs">
+            <button class="tab-button active" data-tab="all">All Questions</button>
+            <button class="tab-button" data-tab="correct">Correct</button>
+            <button class="tab-button" data-tab="incorrect">Incorrect</button>
+            <button class="tab-button" data-tab="skipped">Skipped</button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="tab-content active" id="all-tab">
+            <div id="all-questions">
+                <!-- All questions will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+        <div class="tab-content" id="correct-tab">
+            <div id="correct-questions">
+                <!-- Correct questions will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+        <div class="tab-content" id="incorrect-tab">
+            <div id="incorrect-questions">
+                <!-- Incorrect questions will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+        <div class="tab-content" id="skipped-tab">
+            <div id="skipped-questions">
+                <!-- Skipped questions will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-button play-again" onclick="location.href='lobby.html'">
+                Play Again
+            </button>
+            <button class="action-button view-leaderboard" onclick="location.href='leaderboard.html'">
+                View Leaderboard
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // User Game Status - Comprehensive state management
+        const userGameStatus = {
+            // Game progress
+            currentQuestionIndex: 0,
+            totalQuestions: questions.length,
+            questionsAnswered: 0,
+            questionsCorrect: 0,
+            questionsIncorrect: 0,
+            questionsSkipped: 0,
+            
+            // Scoring
+            playerScore: 0,
+            opponentScore: 0,
+            scoreMultiplier: 1,
+            timeBonus: 0,
+            
+            // Timing
+            timeLeft: 30,
+            timer: null,
+            totalTimeUsed: 0,
+            
+            // Answer state
+            selectedAnswer: null,
+            isAnswerSubmitted: false,
+            answerStreak: 0,
+            
+            // Webcam features
+            webcamEnabled: false,
+            webcamTimer: 10,
+            webcamInterval: null,
+            webcamStream: null,
+            
+            // Hints and power-ups
+            hintsLeft: 3,
+            hintsUsed: 0,
+            
+            // House information
+            playerHouse: localStorage.getItem('hp_house') || 'gryffindor',
+            opponentHouse: getRandomHouse(),
+            
+            // Initialize game
+            init() {
+                this.loadQuestion(this.currentQuestionIndex);
+                this.startTimer();
+                this.updateHouseBadges();
+                this.updateScores();
+            },
+            
+            // Update house badges
+            updateHouseBadges() {
+                const houses = {
+                    gryffindor: { icon: "🦁", badgeClass: "gryffindor-badge" },
+                    slytherin: { icon: "🐍", badgeClass: "slytherin-badge" },
+                    ravenclaw: { icon: "🦅", badgeClass: "ravenclaw-badge" },
+                    hufflepuff: { icon: "🦡", badgeClass: "hufflepuff-badge" }
+                };
+                
+                playerBadge.textContent = houses[this.playerHouse].icon;
+                playerBadge.className = `house-badge ${houses[this.playerHouse].badgeClass}`;
+                
+                opponentBadge.textContent = houses[this.opponentHouse].icon;
+                opponentBadge.className = `house-badge ${houses[this.opponentHouse].badgeClass}`;
+            },
+            
+            // Load question
+            loadQuestion(index) {
+                // Reset state
+                this.selectedAnswer = null;
+                this.isAnswerSubmitted = false;
+                castBtn.disabled = true;
+                this.timeLeft = 30;
+                timerDisplay.textContent = this.timeLeft;
+                
+                const q = questions[index];
+                questionCategory.textContent = q.category;
+                questionText.textContent = q.question;
+                
+                // Set difficulty badge
+                difficultyBadge.textContent = q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1);
+                difficultyBadge.className = `difficulty-badge ${q.difficulty}`;
+                
+                // Load answers
+                answersGrid.innerHTML = '';
+                
+                q.answers.forEach((answer, i) => {
+                    const answerElement = document.createElement('div');
+                    answerElement.className = 'answer-option';
+                    answerElement.textContent = answer;
+                    if (i === q.correct) {
+                        answerElement.setAttribute('data-correct', 'true');
+                    }
+                    answersGrid.appendChild(answerElement);
+                });
+            },
+            
+            // Timer control
+            startTimer() {
+                clearInterval(this.timer);
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    timerDisplay.textContent = this.timeLeft;
+                    this.totalTimeUsed++;
+                    
+                    if (this.timeLeft <= 0) {
+                        this.handleTimeExpired();
+                    }
+                }, 1000);
+            },
+            
+            handleTimeExpired() {
+                clearInterval(this.timer);
+                if (!this.isAnswerSubmitted) {
+                    this.questionsSkipped++;
+                    this.opponentScore += 15;
+                    this.updateScores();
+                    this.nextQuestion();
+                }
+            },
+            
+            // Answer selection
+            selectAnswer(answerElement) {
+                if (this.isAnswerSubmitted) return;
+                
+                // Remove previous selection
+                const answers = document.querySelectorAll('.answer-option');
+                answers.forEach(answer => {
+                    answer.style.backgroundColor = "";
+                    answer.style.borderColor = "";
+                });
+                
+                // Select new answer
+                this.selectedAnswer = answerElement;
+                answerElement.style.backgroundColor = "rgba(212, 175, 55, 0.2)";
+                answerElement.style.borderColor = "var(--gryffindor-gold)";
+                
+                // Enable cast button
+                castBtn.disabled = false;
+            },
+            
+            // Hint functionality
+            useHint() {
+                if (this.hintsLeft > 0 && !this.isAnswerSubmitted) {
+                    this.hintsLeft--;
+                    this.hintsUsed++;
+                    hintBtn.innerHTML = `<span class="spell-icon">💡</span> <span>Hint (${this.hintsLeft} left)</span>`;
+                    
+                    if (this.hintsLeft === 0) {
+                        hintBtn.disabled = true;
+                    }
+                    
+                    // Show a hint (remove two incorrect answers)
+                    const answers = document.querySelectorAll('.answer-option');
+                    let incorrectRemoved = 0;
+                    
+                    // Shuffle array to remove random incorrect answers
+                    const shuffledAnswers = Array.from(answers).sort(() => 0.5 - Math.random());
+                    
+                    for (let answer of shuffledAnswers) {
+                        if (incorrectRemoved < 2 && 
+                            answer !== this.selectedAnswer && 
+                            answer.getAttribute('data-correct') !== 'true') {
+                            answer.style.opacity = '0.3';
+                            answer.style.pointerEvents = 'none';
+                            incorrectRemoved++;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            },
+            
+            // Spell validation
+            startWebcamValidation() {
+                this.isAnswerSubmitted = true;
+                clearInterval(this.timer);
+                
+                // Show webcam modal and feedback
+                webcamModal.style.display = 'block';
+                gestureFeedback.style.display = 'block';
+                this.webcamTimer = 10;
+                webcamTimerDisplay.textContent = this.webcamTimer;
+                
+                // Initialize hand tracking
+                this.initHandTracking();
+                
+                // Start countdown
+                this.webcamInterval = setInterval(() => {
+                    this.webcamTimer--;
+                    webcamTimerDisplay.textContent = this.webcamTimer;
+                    
+                    if (this.webcamTimer <= 0) {
+                        this.validateSpell(0); // Force failure if time runs out
+                    }
+                }, 1000);
+            },
+            
+            // Hand tracking initialization
+            initHandTracking() {
+                canvas = document.getElementById("spellCanvas");
+                ctx = canvas.getContext("2d");
+                canvas.style.display = "block";
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                hands = new Hands({
+                    locateFile: (file) => {
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                    }
+                });
+                
+                hands.setOptions({
+                    maxNumHands: 1,
+                    modelComplexity: 1,
+                    minDetectionConfidence: 0.7,
+                    minTrackingConfidence: 0.5
+                });
+                
+                hands.onResults(this.onHandResults.bind(this));
+                
+                camera = new Camera(document.getElementById("webcamFeed"), {
+                    onFrame: async () => {
+                        await hands.send({image: document.getElementById("webcamFeed")});
+                    },
+                    width: 640,
+                    height: 480
+                });
+                
+                camera.start();
+            },
+            
+            // Hand tracking results
+            onHandResults(results) {
+                ctx.save();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                if (results.multiHandLandmarks) {
+                    for (const landmarks of results.multiHandLandmarks) {
+                        drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
+                            color: '#D4AF37',
+                            lineWidth: 2
+                        });
+                        drawLandmarks(ctx, landmarks, {
+                            color: '#740001',
+                            lineWidth: 1
+                        });
+                        
+                        // Detect gesture
+                        const wrist = landmarks[0];
+                        const currentX = wrist.x * canvas.width;
+                        const currentY = wrist.y * canvas.height;
+                        
+                        const gestureResult = this.detectGesture(currentX, currentY);
+                        
+                        if (gestureResult.detected) {
+                            this.validateSpell(gestureResult.accuracy);
+                        }
+                    }
+                }
+                
+                ctx.restore();
+            },
+            
+            // Gesture detection
+            detectGesture(currentX, currentY) {
+                const now = Date.now();
+                let accuracy = 0;
+                
+                if (gestureState === "WAITING") {
+                    swishStartX = currentX;
+                    flickStartY = currentY;
+                    gestureStartTime = now;
+                    maxSwish = 0;
+                    maxFlick = 0;
+                    gestureState = "SWISH_DETECTED";
+                    updateGestureFeedback("Swish your wand horizontally", 0);
+                    return { detected: false, accuracy: 0 };
+                }
+                
+                else if (gestureState === "SWISH_DETECTED") {
+                    const deltaX = (currentX - swishStartX) / canvas.width;
+                    maxSwish = Math.max(Math.abs(deltaX), maxSwish);
+                    
+                    const swishProgress = Math.min(maxSwish / SWISH_THRESHOLD, 1);
+                    updateGestureFeedback("Swish your wand horizontally", swishProgress * 50);
+                    
+                    if (now - gestureStartTime > GESTURE_TIME_WINDOW/2) {
+                        gestureState = "FLICK_DETECTED";
+                        flickStartY = currentY;
+                        gestureStartTime = now;
+                    }
+                }
+                
+                else if (gestureState === "FLICK_DETECTED") {
+                    const deltaY = (currentY - flickStartY) / canvas.height;
+                    maxFlick = Math.min(deltaY, maxFlick);
+                    
+                    const swishAccuracy = (maxSwish / SWISH_THRESHOLD) * 50;
+                    const flickAccuracy = (Math.abs(maxFlick) / Math.abs(FLICK_THRESHOLD)) * 50;
+                    accuracy = Math.min(swishAccuracy + flickAccuracy, 100);
+                    
+                    updateGestureFeedback("Flick your wand downward", 50 + (flickAccuracy / 2));
+                    
+                    if (now - gestureStartTime > GESTURE_TIME_WINDOW/2) {
+                        gestureState = "WAITING";
+                        return { detected: accuracy >= 70, accuracy };
+                    }
+                }
+                
+                return { detected: false, accuracy: 0 };
+            },
+            
+            // Validate spell result
+            validateSpell(accuracy) {
+                clearInterval(this.webcamInterval);
+                
+                // Stop camera
+                if (camera) {
+                    camera.stop();
+                }
+                
+                const isCorrect = this.selectedAnswer.getAttribute('data-correct') === 'true';
+                const spellSuccess = accuracy >= 70;
+                
+                if (spellSuccess) {
+                    successMessage.style.display = 'block';
+                    
+                    if (isCorrect) {
+                        this.playerScore += 20 * this.scoreMultiplier;
+                        this.questionsCorrect++;
+                        this.answerStreak++;
+                        
+                        // Increase multiplier for streaks
+                        if (this.answerStreak >= 3) {
+                            this.scoreMultiplier = Math.min(3, 1 + Math.floor(this.answerStreak/3));
+                        }
+                    } else {
+                        this.opponentScore += 15;
+                        this.questionsIncorrect++;
+                        this.answerStreak = 0;
+                        this.scoreMultiplier = 1;
+                    }
+                } else {
+                    failureMessage.style.display = 'block';
+                    this.opponentScore += 10;
+                    
+                    if (!isCorrect) {
+                        this.questionsIncorrect++;
+                        this.answerStreak = 0;
+                        this.scoreMultiplier = 1;
+                    }
+                }
+                
+                this.questionsAnswered++;
+                this.updateScores();
+                
+                // Show correct answer if wrong
+                if (!isCorrect) {
+                    const answers = document.querySelectorAll('.answer-option');
+                    answers.forEach(answer => {
+                        if (answer.getAttribute('data-correct') === 'true') {
+                            answer.style.backgroundColor = "var(--hufflepuff-yellow)";
+                            answer.style.color = "var(--hufflepuff-black)";
+                            answer.style.borderColor = "var(--hufflepuff-black)";
+                        }
+                    });
+                }
+                
+                // Hide gesture feedback
+                gestureFeedback.style.display = 'none';
+                canvas.style.display = 'none';
+                
+                // Move to next question after delay
+                setTimeout(() => {
+                    webcamModal.style.display = 'none';
+                    successMessage.style.display = 'none';
+                    failureMessage.style.display = 'none';
+                    this.nextQuestion();
+                }, 2000);
+            },
+            
+            // Next question
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.totalQuestions) {
+                    this.loadQuestion(this.currentQuestionIndex);
+                    this.startTimer();
+                } else {
+                    this.endDuel();
+                }
+            },
+            
+            // Update scores display
+            updateScores() {
+                playerPoints.textContent = `${this.playerScore} points`;
+                opponentPoints.textContent = `${this.opponentScore} points`;
+            },
+            
+            // End duel and save results
+            endDuel() {
+                clearInterval(this.timer);
+                if (this.webcamInterval) clearInterval(this.webcamInterval);
+                
+                // Calculate accuracy
+                const accuracy = this.questionsAnswered > 0 
+                    ? Math.round((this.questionsCorrect / this.questionsAnswered) * 100) 
+                    : 0;
+                
+                // Save results
+                const results = {
+                    playerHouse: this.playerHouse,
+                    playerScore: this.playerScore,
+                    opponentScore: this.opponentScore,
+                    questionsCorrect: this.questionsCorrect,
+                    questionsIncorrect: this.questionsIncorrect,
+                    questionsSkipped: this.questionsSkipped,
+                    totalTimeUsed: this.totalTimeUsed,
+                    hintsUsed: this.hintsUsed,
+                    accuracy: accuracy,
+                    answerStreak: this.answerStreak
+                };
+                
+                localStorage.setItem('trivizardResults', JSON.stringify(results));
+                
+                // Redirect to results page
+                window.location.href = 'results.html';
+            }
+        };
+
+        // Helper functions
+        function getRandomHouse() {
+            const houses = ['gryffindor', 'slytherin', 'ravenclaw', 'hufflepuff'];
+            return houses[Math.floor(Math.random() * houses.length)];
+        }
+
+        function updateGestureFeedback(text, progress) {
+            gestureFeedback.children[0].textContent = text;
+            gestureProgress.style.width = `${progress}%`;
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', () => {
+            userGameStatus.init();
+            
+            // Answer selection
+            answersGrid.addEventListener('click', function(e) {
+                if (e.target.classList.contains('answer-option')) {
+                    userGameStatus.selectAnswer(e.target);
+                }
+            });
+            
+            // Button event listeners
+            castBtn.addEventListener('click', () => userGameStatus.startWebcamValidation());
+            skipBtn.addEventListener('click', () => {
+                userGameStatus.questionsSkipped++;
+                userGameStatus.opponentScore += 10;
+                userGameStatus.updateScores();
+                userGameStatus.nextQuestion();
+            });
+            hintBtn.addEventListener('click', () => userGameStatus.useHint());
+            
+            // Make webcam modal draggable
+            const modal = document.getElementById('webcamModal');
+            const header = document.getElementById('webcamHeader');
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            // Desktop drag
+            header.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                offsetX = e.clientX - modal.getBoundingClientRect().left;
+                offsetY = e.clientY - modal.getBoundingClientRect().top;
+                modal.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                modal.style.left = `${e.clientX - offsetX}px`;
+                modal.style.top = `${e.clientY - offsetY}px`;
+                modal.style.right = 'auto';
+                modal.style.bottom = 'auto';
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                modal.style.cursor = 'move';
+            });
+
+            // Touch support
+            header.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                const touch = e.touches[0];
+                offsetX = touch.clientX - modal.getBoundingClientRect().left;
+                offsetY = touch.clientY - modal.getBoundingClientRect().top;
+                e.preventDefault();
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                modal.style.left = `${touch.clientX - offsetX}px`;
+                modal.style.top = `${touch.clientY - offsetY}px`;
+                modal.style.right = 'auto';
+                modal.style.bottom = 'auto';
+                e.preventDefault();
+            });
+
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        });
+    </script>
+</body>
+</html>

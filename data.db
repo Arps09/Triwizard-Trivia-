@@ -1,0 +1,127 @@
+import cv2
+import mediapipe as mp
+import time
+
+mp_hands = mp.solutions.hands
+mp_drawing = mp.solutions.drawing_utils
+hands = mp_hands.Hands(
+    static_image_mode=False,
+    max_num_hands=1,
+    min_detection_confidence=0.7,
+    min_tracking_confidence=0.5
+)
+
+# Gesture parameters
+SWISH_THRESHOLD = 0.13
+FLICK_THRESHOLD = 0.14
+GESTURE_TIME_WINDOW = 1.2
+
+# State tracking
+current_state = "WAITING"
+swish_start_x = 0
+flick_start_y = 0
+gesture_start_time = 0
+max_swish = 0
+max_flick = 0
+
+def calculate_accuracy():
+    swish_acc = (max_swish / SWISH_THRESHOLD) * 100
+    flick_acc = (abs(max_flick) / abs(FLICK_THRESHOLD)) * 100
+    return min((swish_acc + flick_acc) / 2, 100)
+
+def detect_gesture(landmarks):
+    global current_state, swish_start_x, flick_start_y, gesture_start_time
+    global max_swish, max_flick
+
+    wrist = landmarks.landmark[mp_hands.HandLandmark.WRIST]
+    current_x = wrist.x
+    current_y = wrist.y
+
+    if current_state == "WAITING":
+        swish_start_x = current_x
+        flick_start_y = current_y
+        gesture_start_time = time.time()
+        max_swish = 0
+        max_flick = 0
+        current_state = "SWISH_DETECTED"
+        return False, 0
+
+    elif current_state == "SWISH_DETECTED":
+        delta_x = current_x - swish_start_x
+        max_swish = max(abs(delta_x), max_swish)
+        
+        if time.time() - gesture_start_time > GESTURE_TIME_WINDOW/2:
+            current_state = "FLICK_COMPLETED"
+            flick_start_y = current_y
+            gesture_start_time = time.time()
+
+    elif current_state == "FLICK_COMPLETED":
+        delta_y = current_y - flick_start_y
+        max_flick = min(delta_y, max_flick)
+        
+        if time.time() - gesture_start_time > GESTURE_TIME_WINDOW/2:
+            accuracy = calculate_accuracy()
+            current_state = "WAITING"
+            return (accuracy >= 70), accuracy
+
+    return False, 0
+
+def main():
+    cap = cv2.VideoCapture(0)
+    spell_detected = False
+    last_frame = None
+
+    while cap.isOpened() and not spell_detected:
+        success, frame = cap.read()
+        if not success:
+            continue
+            
+        frame = cv2.flip(frame, 1)
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = hands.process(rgb_frame)
+
+        display_text = ""
+        
+        if results.multi_hand_landmarks:
+            for landmarks in results.multi_hand_landmarks:
+                cast_result, accuracy = detect_gesture(landmarks)
+                mp_drawing.draw_landmarks(frame, landmarks, mp_hands.HAND_CONNECTIONS)
+
+                if current_state != "WAITING":
+                    current_acc = calculate_accuracy()
+                    display_text = f"{current_acc:.1f}%"
+                
+                if cast_result:
+                    spell_detected = True
+                    last_frame = frame.copy()
+
+        # Draw accuracy percentage
+        if display_text:
+            text_size = cv2.getTextSize(display_text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
+            text_x = frame.shape[1] - text_size[0] - 20
+            text_y = frame.shape[0] - 20
+            cv2.putText(frame, display_text, (text_x, text_y),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
+        cv2.imshow('Spell Detection', frame)
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # Auto-close on successful detection
+    if spell_detected:
+        # Briefly show final frame
+        if last_frame is not None:
+            cv2.imshow('Spell Detection', last_frame)
+            cv2.waitKey(500)  # Display result for 500ms
+        
+        # Close all OpenCV windows
+        cap.release()
+        cv2.destroyAllWindows()
+        return
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()

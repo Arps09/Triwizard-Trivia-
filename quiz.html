@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triwizard Tournament Lobby</title>
+    <style>
+        /* Harry Potter Theme Styles */
+        :root {
+            --gryffindor-red: #740001;
+            --gryffindor-gold: #d3a625;
+            --slytherin-green: #1a472a;
+            --slytherin-silver: #aaaaaa;
+            --ravenclaw-blue: #0e1a40;
+            --ravenclaw-bronze: #946b2d;
+            --hufflepuff-yellow: #ecb939;
+            --hufflepuff-black: #372e29;
+            --hogwarts-light: #e0e0e0;
+            --hogwarts-dark: #2c2c2c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', serif;
+        }
+
+        body {
+            background: url('harrypotter.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 0;
+        }
+
+        body {
+            background: url('harrypotter.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            max-width: 600px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 20px var(--gryffindor-gold);
+            overflow: hidden;
+            color: var(--hogwarts-light);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 5px var(--gryffindor-gold));
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--gryffindor-gold);
+            text-shadow: 0 0 5px var(--gryffindor-red);
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--gryffindor-gold);
+            font-weight: normal;
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: var(--hogwarts-light);
+        }
+
+        .house-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 2px solid var(--gryffindor-gold);
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .gryffindor-badge {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+        }
+
+        .slytherin-badge {
+            background-color: var(--slytherin-green);
+            color: var(--slytherin-silver);
+        }
+
+        .ravenclaw-badge {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+        }
+
+        .hufflepuff-badge {
+            background-color: var(--hufflepuff-yellow);
+            color: var(--hufflepuff-black);
+        }
+
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background-color: var(--hogwarts-dark);
+            color: var(--hogwarts-light);
+            border: 1px solid var(--gryffindor-gold);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab:first-child {
+            border-radius: 5px 0 0 5px;
+        }
+
+        .tab:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+
+        .tab.active {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+            font-weight: bold;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--gryffindor-gold);
+            border-radius: 5px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--gryffindor-red);
+            box-shadow: 0 0 5px var(--gryffindor-red);
+        }
+
+        label {
+            position: absolute;
+            left: 15px;
+            top: 12px;
+            color: var(--hogwarts-light);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: -10px;
+            left: 10px;
+            font-size: 0.8rem;
+            background-color: var(--hogwarts-dark);
+            padding: 0 5px;
+            color: var(--gryffindor-gold);
+        }
+
+        button {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--gryffindor-gold);
+            color: var(--gryffindor-red);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-display {
+            font-size: 2rem;
+            letter-spacing: 3px;
+            color: var(--gryffindor-gold);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            border: 1px dashed var(--gryffindor-gold);
+        }
+
+        .copy-btn {
+            background-color: var(--ravenclaw-blue);
+            color: var(--hogwarts-light);
+        }
+
+        .copy-btn:hover {
+            background-color: var(--ravenclaw-bronze);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .floating-objects {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-object {
+            position: absolute;
+            opacity: 0.7;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .code-display {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Harry_Potter_wordmark.svg/1280px-Harry_Potter_wordmark.svg.png" alt="Harry Potter Logo" class="logo">
+        <h1>Triwizard Tournament Lobby</h1>
+        
+        <!-- User Welcome Section -->
+        <div class="welcome-section">
+            <div class="house-badge gryffindor-badge"></div>
+            <h2>Welcome, <span id="username-display">Albus</span>!</h2>
+            <p class="welcome-message">Prepare for magical duels of wit and wisdom</p>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <div class="tab active" data-tab="join">Join Quiz</div>
+            <div class="tab" data-tab="create">Create Quiz</div>
+        </div>
+        
+        <!-- Join Quiz Form -->
+        <div id="join-form" class="form-container">
+            <div class="input-group">
+                <input type="text" id="quiz-code" placeholder=" " required>
+                <label for="quiz-code">Enter Quiz Code</label>
+            </div>
+            <button id="join-btn">Enter Tournament</button>
+        </div>
+        
+        <!-- Create Quiz Form -->
+        <div id="create-form" class="form-container hidden">
+            <div class="input-group">
+                <input type="text" id="quiz-name" placeholder=" " required>
+                <label for="quiz-name">Tournament Name</label>
+            </div>
+            <div class="code-display" id="generated-code">HP7X-9K3M</div>
+            <button id="copy-btn" class="copy-btn">Copy Code</button>
+            <button id="start-btn">Begin Tournament</button>
+            <p>Share this code with other wizards to join your tournament</p>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const joinForm = document.getElementById('join-form');
+        const createForm = document.getElementById('create-form');
+        const joinBtn = document.getElementById('join-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const startBtn = document.getElementById('start-btn');
+        const quizCodeInput = document.getElementById('quiz-code');
+        const generatedCode = document.getElementById('generated-code');
+        const usernameDisplay = document.getElementById('username-display');
+
+        // Get username from localStorage (set during login)
+        const username = localStorage.getItem('hp-username') || 'Wizard';
+        const house = localStorage.getItem('hp-house') || 'gryffindor';
+        usernameDisplay.textContent = username;
+        
+        // Set house badge
+        const houseBadge = document.querySelector('.house-badge');
+        houseBadge.className = `house-badge ${house}-badge`;
+        
+        // Generate a random quiz code
+        function generateQuizCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+                if (i === 3) code += '-';
+            }
+            return code;
+        }
+        
+        // Set initial generated code
+        generatedCode.textContent = generateQuizCode();
+        
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (tab.dataset.tab === 'join') {
+                    joinForm.classList.remove('hidden');
+                    createForm.classList.add('hidden');
+                } else {
+                    joinForm.classList.add('hidden');
+                    createForm.classList.remove('hidden');
+                    // Generate new code each time create tab is opened
+                    generatedCode.textContent = generateQuizCode();
+                }
+            });
+        });
+        
+        // Join quiz button
+        joinBtn.addEventListener('click', () => {
+            const code = quizCodeInput.value.trim();
+            
+            if (code.length !== 8 || !code.includes('-')) {
+                alert('Please enter a valid quiz code (format: XXXX-XXXX)');
+                return;
+            }
+            
+            alert(`Joining tournament ${code}...`);
+            // In a real app, you would connect to the quiz with this code
+        });
+        
+        // Copy code button
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(generatedCode.textContent)
+                .then(() => {
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy Code';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        });
+        
+        // Start quiz button
+        startBtn.addEventListener('click', () => {
+            alert(`Starting tournament ${generatedCode.textContent}!`);
+            // In a real app, you would initialize the quiz and wait for players
+        });
+    </script>
+</body>
+</html>

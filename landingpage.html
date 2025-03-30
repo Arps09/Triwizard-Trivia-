@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="index.html"></script>
+    <title>TRIVIZARD - Welcome to Hogwarts</title>
+    <style>
+        /* Harry Potter Color Theme */
+        :root {
+            --gryffindor-red: #740001;
+            --gryffindor-gold: #d3a625;
+            --slytherin-green: #1a472a;
+            --slytherin-silver: #aaaaaa;
+            --ravenclaw-blue: #0e1a40;
+            --ravenclaw-bronze: #946b2d;
+            --hufflepuff-yellow: #ecb939;
+            --hufflepuff-black: #372e29;
+            --hogwarts-dark: #2c2c2c;
+            --parchment: #f5e7c1;
+        }
+
+        body {
+            background-color: var(--hogwarts-dark);
+            color: var(--parchment);
+            font-family: 'Cormorant Garamond', serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(212, 175, 55, 0.1) 50px,
+                    rgba(212, 175, 55, 0.1) 51px
+                );
+            overflow-x: hidden;
+        }
+
+        body {
+            background: url('harrypotter.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin: 2rem 0;
+            width: 100%;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            color: var(--gryffindor-gold);
+            text-shadow: 0 0 10px var(--gryffindor-red);
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 3px;
+            animation: glow 2s infinite alternate;
+        }
+
+        .subtitle {
+            color: var(--slytherin-silver);
+            font-size: 1.8rem;
+            font-style: italic;
+        }
+
+        .sorting-hat-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .sorting-hat-icon {
+            font-size: 8rem;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+        }
+
+        .speech-bubble {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--parchment);
+            color: var(--hogwarts-dark);
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 400px;
+            font-style: italic;
+            opacity: 0;
+            animation: fadeInBubble 1s ease-out 1s forwards;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: var(--parchment) transparent transparent;
+        }
+
+        
+
+        .houses-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 900px;
+            animation: fadeIn 1s ease-out 1.5s both;
+        }
+
+        .house-card {
+            width: 200px;
+            height: 250px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .house-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .house-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                transparent 45%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 55%
+            );
+            transform: rotate(30deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .house-card:hover::before {
+            animation: shine 1.5s;
+        }
+
+        .house-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .house-name {
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .house-motto {
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        /* House Specific Styles */
+        .gryffindor {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+            border: 2px solid var(--gryffindor-gold);
+        }
+
+        .slytherin {
+            background-color: var(--slytherin-green);
+            color: var(--slytherin-silver);
+            border: 2px solid var(--slytherin-silver);
+        }
+
+        .ravenclaw {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+            border: 2px solid var(--ravenclaw-bronze);
+        }
+
+        .hufflepuff {
+            background-color: var(--hufflepuff-yellow);
+            color: var(--hufflepuff-black);
+            border: 2px solid var(--hufflepuff-black);
+        }
+
+        /* Continue Button Styles */
+        .continue-btn {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            display: none; /* Hidden by default */
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .continue-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                transparent 45%,
+                rgba(255, 255, 255, 0.3) 50%,
+                transparent 55%
+            );
+            transform: rotate(30deg);
+            transition: all 0.5s ease;
+        }
+
+        .continue-btn:hover::after {
+            animation: shine 1.5s;
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInBubble {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 5px var(--gryffindor-red); }
+            to { text-shadow: 0 0 20px var(--gryffindor-gold); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes sparkle {
+            from { opacity: 1; transform: scale(0.5); }
+            to { opacity: 0; transform: scale(1.5); }
+        }
+
+        /* Sparkle Effect */
+        .sparkle-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            animation: sparkle 1s ease-out;
+            pointer-events: none;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding: 1rem;
+            text-align: center;
+            color: var(--slytherin-silver);
+            font-style: italic;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .houses-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .house-card {
+                width: 80%;
+                height: auto;
+                padding: 1.5rem;
+            }
+            
+            .sorting-hat-icon {
+                font-size: 6rem;
+            }
+        }
+
+        .houses-container {
+    display: flex;
+    justify-content: center; /* Centers the house cards horizontally */
+    align-items: center; /* Aligns them vertically */
+    gap: 20px; /* Adds spacing between the cards */
+    flex-wrap: nowrap; /* Prevents wrapping to a new line */
+    margin-top: 50px; /* Adjust for positioning */
+}
+
+.house-card {
+    width: 200px; /* Set a fixed width for uniformity */
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">TRIWIZARD TOURNAMENT</h1>
+        <p class="subtitle">The Sorting Ceremony</p>
+    </div>
+
+    <div class="sorting-hat-container">
+        <div class="speech-bubble">
+            "Hmm... difficult. Very difficult. Where shall I put you?"
+        </div>
+        <div class="sorting-hat-icon">🎩</div>
+    </div>
+
+    <div class="houses-container">
+        <!-- Gryffindor Card -->
+        <div class="house-card gryffindor" onclick="selectHouse('gryffindor')">
+            <div class="house-icon"><img src="gryffindor.png" alt="Gryffindor" width="50"></div>
+            <h2 class="house-name">Gryffindor</h2>
+            <p class="house-motto">"Bravery, Courage, and Chivalry"</p>
+        </div>
+
+        <!-- Slytherin Card -->
+        <div class="house-card slytherin" onclick="selectHouse('slytherin')">
+            <div class="house-icon"><img src="slytherin.png" alt="slytherin" width="50"></div>
+            <h2 class="house-name">Slytherin</h2>
+            <p class="house-motto">"Ambition, Cunning, and Resourcefulness"</p>
+        </div>
+
+        <!-- Ravenclaw Card -->
+        <div class="house-card ravenclaw" onclick="selectHouse('ravenclaw')">
+            <div class="house-icon"><img src="revenclaw.png" alt="revenclaw" width="50"></div>
+            <h2 class="house-name">Ravenclaw</h2>
+            <p class="house-motto">"Intelligence, Wisdom, and Creativity"</p>
+        </div>
+
+        <!-- Hufflepuff Card -->
+        <div class="house-card hufflepuff" onclick="selectHouse('hufflepuff')">
+            <div class="house-icon"><img src="hufflepuff.png" alt="hufflepuff" width="50"></div>
+            <h2 class="house-name">Hufflepuff</h2>
+            <p class="house-motto">"Hard Work, Patience, and Loyalty"</p>
+        </div>
+    </div>
+
+
+    <div class="footer">
+        <p>"The Houses compete throughout the year to win the House Cup."</p>
+    </div>
+
+    <script>
+        // House selection function
+        function selectHouse(house) {
+            // Store the selected house
+            localStorage.setItem('selectedHouse', house);
+            
+            // Visual feedback
+            const cards = document.querySelectorAll('.house-card');
+            cards.forEach(card => {
+                if (card.classList.contains(house)) {
+                    // Selected house animation
+                    card.style.transform = 'scale(1.05)';
+                    card.style.boxShadow = `0 0 30px ${getHouseColor(house)}`;
+                    
+                    // Add sparkle effect
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle-effect';
+                    sparkle.innerHTML = '✨✨✨';
+                    card.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, 1000);
+                } else {
+                    // Fade other houses
+                    card.style.opacity = '0.5';
+                    card.style.filter = 'grayscale(80%)';
+                    card.style.pointerEvents = 'none';
+                }
+            });
+            
+            // Create and show continue button
+            showContinueButton(house);
+        }
+        
+        function showContinueButton(house) {
+            // Remove existing button if any
+            const existingBtn = document.querySelector('.continue-btn');
+            if (existingBtn) existingBtn.remove();
+            
+            // Create new button
+            const continueBtn = document.createElement('button');
+            continueBtn.className = 'continue-btn';
+            continueBtn.textContent = `Continue to Tournament as ${house.charAt(0).toUpperCase() + house.slice(1)}`;
+            continueBtn.style.backgroundColor = getHouseColor(house);
+            continueBtn.style.color = getSecondaryColor(house);
+            continueBtn.style.border = `2px solid ${getSecondaryColor(house)}`;
+            
+            // Add click handler
+            continueBtn.addEventListener('click', () => {
+                proceedToLobby(house);
+            });
+            
+            // Add to DOM
+            document.querySelector('.houses-container').appendChild(continueBtn);
+            
+            // Show with animation
+            setTimeout(() => {
+                continueBtn.style.display = 'block';
+            }, 10);
+        }
+        
+        function proceedToLobby(house) {
+            const continueBtn = document.querySelector('.continue-btn');
+            
+            // Disable button during transition
+            continueBtn.disabled = true;
+            
+            // Show loading spinner
+            continueBtn.innerHTML = `<span class="spinner">✧</span> Entering Tournament Hall...`;
+            
+            // Add magical transition effect
+            document.body.style.animation = 'fadeOut 0.5s ease-out forwards';
+            
+            // Redirect after delay
+            setTimeout(() => {
+                window.location.href = 'lobby.html';
+            }, 1500);
+            
+            // Add fadeOut animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeOut {
+                    to { opacity: 0; transform: translateY(20px); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        function getHouseColor(house) {
+            switch(house) {
+                case 'gryffindor': return 'var(--gryffindor-red)';
+                case 'slytherin': return 'var(--slytherin-green)';
+                case 'ravenclaw': return 'var(--ravenclaw-blue)';
+                case 'hufflepuff': return 'var(--hufflepuff-yellow)';
+                default: return '#ffffff';
+            }
+        }
+        
+        function getSecondaryColor(house) {
+            switch(house) {
+                case 'gryffindor': return 'var(--gryffindor-gold)';
+                case 'slytherin': return 'var(--slytherin-silver)';
+                case 'ravenclaw': return 'var(--ravenclaw-bronze)';
+                case 'hufflepuff': return 'var(--hufflepuff-black)';
+                default: return '#000000';
+            }
+        }
+        // Check if user is logged in
+document.addEventListener('DOMContentLoaded', () => {
+    const username = localStorage.getItem('username');
+    if (!username) {
+        // If no username found, redirect back to login
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Display welcome message
+    const welcomeElement = document.createElement('div');
+    welcomeElement.className = 'welcome-message';
+    welcomeElement.textContent = `Welcome, ${username}!`;
+    welcomeElement.style.cssText = `
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: var(--gryffindor-gold);
+        font-size: 1.2rem;
+    `;
+    document.body.appendChild(welcomeElement);
+
+    // Check if house was already selected during signup
+    const storedHouse = localStorage.getItem('house');
+    if (storedHouse) {
+        // Show the house as already selected
+        selectHouse(storedHouse);
+    }
+});
+
+    </script>
+</body>
+</html>

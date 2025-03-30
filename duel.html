@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIVIZARD - Magical Duel</title>
+    <style>
+        /* Harry Potter Color Theme */
+        :root {
+            --gryffindor-red: #740001;
+            --gryffindor-gold: #d3a625;
+            --slytherin-green: #1a472a;
+            --slytherin-silver: #aaaaaa;
+            --ravenclaw-blue: #0e1a40;
+            --ravenclaw-bronze: #946b2d;
+            --hufflepuff-yellow: #ecb939;
+            --hufflepuff-black: #372e29;
+            --hogwarts-dark: #2c2c2c;
+            --parchment: #f5e7c1;
+        }
+
+        body {
+            background-color: var(--hogwarts-dark);
+            color: var(--parchment);
+            font-family: 'Cormorant Garamond', serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(212, 175, 55, 0.1) 50px,
+                    rgba(212, 175, 55, 0.1) 51px
+                );
+            overflow-x: hidden;
+        }
+        body {
+            background: url('harrypotter.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+
+        .header {
+            text-align: center;
+            margin: 1rem 0;
+            width: 100%;
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            color: var(--gryffindor-gold);
+            text-shadow: 0 0 10px var(--gryffindor-red);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .duel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .opponents-display {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .wizard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%;
+            text-align: center;
+        }
+
+        .wizard-you {
+            order: 1;
+        }
+
+        .wizard-opponent {
+            order: 3;
+        }
+
+        .house-badge {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            border: 2px solid;
+            position: relative;
+        }
+
+        .wizard-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .wizard-points {
+            font-style: italic;
+            color: var(--slytherin-silver);
+        }
+
+        .vs-circle {
+            order: 2;
+            align-self: center;
+            background-color: var(--hogwarts-dark);
+            border: 2px solid var(--gryffindor-gold);
+            color: var(--gryffindor-gold);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            margin: 0 1rem;
+        }
+
+        .question-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--gryffindor-gold);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            position: relative;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .question-category {
+            font-family: 'Cinzel', serif;
+            color: var(--gryffindor-gold);
+            font-size: 1.1rem;
+        }
+
+        .difficulty-badge {
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .easy {
+            background-color: var(--hufflepuff-yellow);
+            color: var(--hufflepuff-black);
+        }
+
+        .medium {
+            background-color: var(--ravenclaw-bronze);
+            color: var(--parchment);
+        }
+
+        .hard {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+        }
+
+        .question-timer {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-family: 'Cinzel', serif;
+            display: flex;
+            align-items: center;
+        }
+
+        .timer-icon {
+            margin-right: 0.5rem;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .answer-option {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--gryffindor-gold);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .answer-option:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .spell-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+
+        .spell-btn {
+            padding: 0.7rem 1.5rem;
+            font-family: 'Cinzel', serif;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .spell-icon {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .hint-btn {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+            border: 1px solid var(--ravenclaw-bronze);
+        }
+
+        .cast-btn {
+            background-color: var(--slytherin-green);
+            color: var(--slytherin-silver);
+            border: 1px solid var(--slytherin-silver);
+        }
+
+        .skip-btn {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+            border: 1px solid var(--gryffindor-gold);
+        }
+
+        /* Webcam Modal */
+        .webcam-modal {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background-color: var(--hogwarts-dark);
+            border: 2px solid var(--gryffindor-gold);
+            border-radius: 10px;
+            padding: 1rem;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            cursor: move;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .webcam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            cursor: move;
+            padding: 8px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        .webcam-title {
+            font-family: 'Cinzel', serif;
+            color: var(--gryffindor-gold);
+            font-size: 1.1rem;
+        }
+
+        .webcam-timer {
+            color: var(--slytherin-silver);
+            font-family: 'Cinzel', serif;
+            background-color: var(--ravenclaw-blue);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .webcam-feed {
+            width: 100%;
+            height: 200px;
+            background-color: black;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            object-fit: cover;
+        }
+
+        .spell-instruction {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            color: var(--ravenclaw-bronze);
+            font-size: 0.9rem;
+        }
+
+        .validation-message {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            display: none;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: rgba(28, 112, 28, 0.3);
+            color: var(--hufflepuff-yellow);
+            border: 1px solid var(--hufflepuff-yellow);
+        }
+
+        .failure {
+            background-color: rgba(112, 28, 28, 0.3);
+            color: var(--gryffindor-red);
+            border: 1px solid var(--gryffindor-red);
+        }
+
+        /* Gesture Feedback */
+        .gesture-feedback {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: var(--gryffindor-gold);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-family: 'Cinzel', serif;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+        }
+
+        .gesture-progress {
+            height: 5px;
+            background-color: var(--ravenclaw-blue);
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .gesture-progress-bar {
+            height: 100%;
+            background-color: var(--gryffindor-gold);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        #spellCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* House-specific styles */
+        .gryffindor-badge {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+            border-color: var(--gryffindor-gold);
+        }
+
+        .slytherin-badge {
+            background-color: var(--slytherin-green);
+            color: var(--slytherin-silver);
+            border-color: var(--slytherin-silver);
+        }
+
+        .ravenclaw-badge {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+            border-color: var(--ravenclaw-bronze);
+        }
+
+        .hufflepuff-badge {
+            background-color: var(--hufflepuff-yellow);
+            color: var(--hufflepuff-black);
+            border-color: var(--hufflepuff-black);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px var(--gryffindor-gold); }
+            to { box-shadow: 0 0 15px var(--gryffindor-gold); }
+        }
+
+        @keyframes spellCast {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .opponents-display {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .wizard {
+                width: 80%;
+                margin-bottom: 1rem;
+            }
+            
+            .vs-circle {
+                margin: 1rem 0;
+                order: 2;
+            }
+            
+            .answers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .wizard-you {
+                order: 1;
+            }
+            
+            .wizard-opponent {
+                order: 3;
+            }
+            
+            .webcam-modal {
+                width: 90%;
+                right: 5%;
+                bottom: 10px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">TRIWIZARD DUEL</h1>
+    </div>
+
+    <div class="duel-container">
+        <div class="opponents-display">
+            <!-- Player -->
+            <div class="wizard wizard-you">
+                <div class="house-badge" id="playerBadge">🦁</div>
+                <h3 class="wizard-name">You</h3>
+                <p class="wizard-points" id="playerPoints">100 points</p>
+            </div>
+
+            <!-- VS -->
+            <div class="vs-circle">VS</div>
+
+            <!-- Opponent -->
+            <div class="wizard wizard-opponent">
+                <div class="house-badge" id="opponentBadge">🐍</div>
+                <h3 class="wizard-name">Opponent</h3>
+                <p class="wizard-points" id="opponentPoints">100 points</p>
+            </div>
+        </div>
+
+        <div class="question-container">
+            <div class="question-header">
+                <div>
+                    <span class="question-category" id="questionCategory">Potions</span>
+                    <span class="difficulty-badge" id="difficultyBadge">Easy</span>
+                </div>
+                <span class="question-timer">
+                    <span class="timer-icon">⏳</span>
+                    <span id="timer">30</span>
+                </span>
+            </div>
+            <p class="question-text" id="questionText">
+                Which potion is known as "Liquid Luck" and grants the drinker good fortune?
+            </p>
+            
+            <div class="answers-grid" id="answersGrid">
+                <div class="answer-option" data-correct="true">Felix Felicis</div>
+                <div class="answer-option">Polyjuice Potion</div>
+                <div class="answer-option">Veritaserum</div>
+                <div class="answer-option">Amortentia</div>
+            </div>
+        </div>
+
+        <div class="spell-buttons">
+            <button class="spell-btn hint-btn" id="hintBtn">
+                <span class="spell-icon">💡</span>
+                <span>Hint (3 left)</span>
+            </button>
+            <button class="spell-btn cast-btn" id="castBtn">
+                <span class="spell-icon">✨</span>
+                <span>Cast Spell</span>
+            </button>
+            <button class="spell-btn skip-btn" id="skipBtn">
+                <span class="spell-icon">⏭️</span>
+                <span>Skip</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Webcam Modal -->
+    <div class="webcam-modal" id="webcamModal">
+        <div class="webcam-header" id="webcamHeader">
+            <div class="webcam-title">Spell Validation</div>
+            <div class="webcam-timer" id="webcamTimer">60</div>
+        </div>
+        <video class="webcam-feed" id="webcamFeed" autoplay playsinline></video>
+        <p class="spell-instruction">Perform "Swish and Flick" motion with your wand to validate answer</p>
+        <div class="validation-message success" id="successMessage">Spell Successful! +20 points</div>
+        <div class="validation-message failure" id="failureMessage">Spell Failed! Try again</div>
+    </div>
+
+    <!-- Gesture Feedback -->
+    <div class="gesture-feedback" id="gestureFeedback">
+        <div>Perform "Swish and Flick"</div>
+        <div class="gesture-progress">
+            <div class="gesture-progress-bar" id="gestureProgress"></div>
+        </div>
+    </div>
+
+    <!-- Hand Tracking Canvas -->
+    <canvas id="spellCanvas"></canvas>
+
+    <script>
+        // Game Data - 30 questions (10 easy, 10 medium, 10 hard)
+        const questions = [
+            // Easy Questions (1-10)
+            {
+                category: "Potions",
+                question: "Which potion is known as 'Liquid Luck' and grants the drinker good fortune?",
+                answers: ["Felix Felicis", "Polyjuice Potion", "Veritaserum", "Amortentia"],
+                correct: 0,
+                difficulty: "easy"
+            },
+            {
+                category: "Creatures",
+                question: "What creature is Hagrid's pet spider named Aragog?",
+                answers: ["Acromantula", "Aragog", "Basilisk", "Thestral"],
+                correct: 0,
+                difficulty: "easy"
+            },
+            {
+                category: "Hogwarts",
+                question: "Which house has the colors green and silver?",
+                answers: ["Slytherin", "Gryffindor", "Ravenclaw", "Hufflepuff"],
+                correct: 0,
+                difficulty: "easy"
+            },
+            // Medium Questions (11-20)
+            {
+                category: "Potions",
+                question: "Which potion causes the drinker to reveal their deepest secrets?",
+                answers: ["Veritaserum", "Polyjuice Potion", "Draught of Living Death", "Felix Felicis"],
+                correct: 0,
+                difficulty: "medium"
+            },
+            {
+                category: "Spells",
+                question: "What is the counter-spell for Expelliarmus?",
+                answers: ["There isn't one", "Protego", "Finite Incantatem", "Rictusempra"],
+                correct: 0,
+                difficulty: "medium"
+            },
+            {
+                category: "History",
+                question: "Who founded Hogwarts along with Godric Gryffindor?",
+                answers: ["Rowena Ravenclaw, Helga Hufflepuff, and Salazar Slytherin", 
+                         "Merlin, Morgana, and Salazar Slytherin",
+                         "Helga Hufflepuff and Salazar Slytherin",
+                         "Rowena Ravenclaw and Helga Hufflepuff"],
+                correct: 0,
+                difficulty: "medium"
+            },
+            {
+                category: "Magical Objects",
+                question: "What does the Mirror of Erised show?",
+                answers: ["The viewer's deepest desire", "The future", "Hidden objects", "The truth"],
+                correct: 0,
+                difficulty: "medium"
+            },
+            
+            // Hard Questions (21-30)
+            {
+                category: "History",
+                question: "What was the original purpose of the Triwizard Tournament?",
+                answers: ["To foster international magical cooperation", 
+                         "To find the most powerful wizard",
+                         "To settle disputes between schools",
+                         "To test new magical creatures"],
+                correct: 0,
+                difficulty: "hard"
+            },
+            {
+                category: "Spells",
+                question: "What is the incantation for the spell that creates a fiery serpent?",
+                answers: ["Serpensortia Incendio", "Vipera Evanesca", "Draco Dormiens", "None of the above"],
+                correct: 0,
+                difficulty: "hard"
+            },
+            {
+                category: "Characters",
+                question: "What was the name of the goblin who helped Harry break into Gringotts?",
+                answers: ["Griphook", "Bogrod", "Ragnok", "Urg the Unclean"],
+                correct: 0,
+                difficulty: "hard"
+            },
+        ];
+
+        // Game state
+        let currentQuestion = 0;
+        let playerScore = 0;
+        let opponentScore = 0;
+        let timeLeft = 30;
+        let timer;
+        let selectedAnswer = null;
+        let isAnswerSubmitted = false;
+        let webcamTimer = 10; // 1 minute in seconds
+        let webcamInterval;
+        let hintsLeft = 3;
+        let webcamStream = null;
+
+        // Wand gesture detection state
+        let hands;
+        let camera;
+        let canvas;
+        let ctx;
+        let gestureState = "WAITING";
+        let swishStartX = 0;
+        let flickStartY = 0;
+        let gestureStartTime = 0;
+        let maxSwish = 0;
+        let maxFlick = 0;
+        const SWISH_THRESHOLD = 0.13;
+        const FLICK_THRESHOLD = 0.14;
+        const GESTURE_TIME_WINDOW = 1200; // ms
+
+        // DOM elements
+        const playerBadge = document.getElementById('playerBadge');
+        const opponentBadge = document.getElementById('opponentBadge');
+        const playerPoints = document.getElementById('playerPoints');
+        const opponentPoints = document.getElementById('opponentPoints');
+        const questionCategory = document.getElementById('questionCategory');
+        const difficultyBadge = document.getElementById('difficultyBadge');
+        const questionText = document.getElementById('questionText');
+        const answersGrid = document.getElementById('answersGrid');
+        const timerDisplay = document.getElementById('timer');
+        const hintBtn = document.getElementById('hintBtn');
+        const castBtn = document.getElementById('castBtn');
+        const skipBtn = document.getElementById('skipBtn');
+        const webcamModal = document.getElementById('webcamModal');
+        const webcamHeader = document.getElementById('webcamHeader');
+        const webcamFeed = document.getElementById('webcamFeed');
+        const webcamTimerDisplay = document.getElementById('webcamTimer');
+        const successMessage = document.getElementById('successMessage');
+        const failureMessage = document.getElementById('failureMessage');
+        const gestureFeedback = document.getElementById('gestureFeedback');
+        const gestureProgress = document.getElementById('gestureProgress');
+
+        // Get player and opponent houses from localStorage
+        const playerHouse = localStorage.getItem('selectedHouse') || 'gryffindor';
+        const opponentHouse = localStorage.getItem('opponentHouse') || 'slytherin';
+        
+        // House data
+        const houses = {
+            gryffindor: { icon: "🦁", badgeClass: "gryffindor-badge" },
+            slytherin: { icon: "🐍", badgeClass: "slytherin-badge" },
+            ravenclaw: { icon: "🦅", badgeClass: "ravenclaw-badge" },
+            hufflepuff: { icon: "🦡", badgeClass: "hufflepuff-badge" }
+        };
+        
+        // Set player and opponent badges
+        playerBadge.textContent = houses[playerHouse].icon;
+        playerBadge.classList.add(houses[playerHouse].badgeClass);
+        
+        opponentBadge.textContent = houses[opponentHouse].icon;
+        opponentBadge.classList.add(houses[opponentHouse].badgeClass);
+        
+        // Initialize first question
+        loadQuestion(currentQuestion);
+        startTimer();
+        
+        // Answer selection
+        answersGrid.addEventListener('click', function(e) {
+            if (e.target.classList.contains('answer-option') && !isAnswerSubmitted) {
+                // Remove previous selection
+                const answers = document.querySelectorAll('.answer-option');
+                answers.forEach(answer => {
+                    answer.style.backgroundColor = "";
+                    answer.style.color = "";
+                    answer.style.borderColor = "";
+                });
+                
+                // Select new answer
+                selectedAnswer = e.target;
+                selectedAnswer.style.backgroundColor = "rgba(212, 175, 55, 0.2)";
+                selectedAnswer.style.borderColor = "var(--gryffindor-gold)";
+                
+                // Enable cast button
+                castBtn.disabled = false;
+            }
+        });
+        
+        // Cast spell button
+        castBtn.addEventListener('click', function() {
+            if (selectedAnswer && !isAnswerSubmitted) {
+                isAnswerSubmitted = true;
+                clearInterval(timer);
+                startWebcamValidation();
+            }
+        });
+        
+        // Skip button
+        skipBtn.addEventListener('click', function() {
+            if (!isAnswerSubmitted) {
+                clearInterval(timer);
+                opponentScore += 10;
+                updateScores();
+                nextQuestion();
+            }
+        });
+        
+        // Hint button
+        hintBtn.addEventListener('click', function() {
+            if (hintsLeft > 0 && !isAnswerSubmitted) {
+                hintsLeft--;
+                hintBtn.innerHTML = `<span class="spell-icon">💡</span> <span>Hint (${hintsLeft} left)</span>`;
+                
+                if (hintsLeft === 0) {
+                    hintBtn.disabled = true;
+                }
+                
+                // Show a hint (remove two incorrect answers)
+                const answers = document.querySelectorAll('.answer-option');
+                let incorrectRemoved = 0;
+                
+                // Shuffle array to remove random incorrect answers
+                const shuffledAnswers = Array.from(answers).sort(() => 0.5 - Math.random());
+                
+                for (let answer of shuffledAnswers) {
+                    if (incorrectRemoved < 2 && 
+                        answer !== selectedAnswer && 
+                        answer.getAttribute('data-correct') !== 'true') {
+                        answer.style.opacity = '0.3';
+                        answer.style.pointerEvents = 'none';
+                        incorrectRemoved++;
+                    }
+                }
+            }
+        });
+
+        // Initialize hand tracking
+        function initHandTracking() {
+            canvas = document.getElementById("spellCanvas");
+            ctx = canvas.getContext("2d");
+            canvas.style.display = "block";
+            
+            // Set canvas dimensions
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            hands = new Hands({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }
+            });
+            
+            hands.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.7,
+                minTrackingConfidence: 0.5
+            });
+            
+            hands.onResults(onHandResults);
+            
+            camera = new Camera(document.getElementById("webcamFeed"), {
+                onFrame: async () => {
+                    await hands.send({image: document.getElementById("webcamFeed")});
+                },
+                width: 640,
+                height: 480
+            });
+            
+            camera.start();
+        }
+
+        function onHandResults(results) {
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (results.multiHandLandmarks) {
+                for (const landmarks of results.multiHandLandmarks) {
+                    drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
+                        color: '#D4AF37',
+                        lineWidth: 2
+                    });
+                    drawLandmarks(ctx, landmarks, {
+                        color: '#740001',
+                        lineWidth: 1
+                    });
+                    
+                    // Detect gesture
+                    const wrist = landmarks[0]; // Wrist landmark
+                    const currentX = wrist.x * canvas.width;
+                    const currentY = wrist.y * canvas.height;
+                    
+                    const gestureResult = detectGesture(currentX, currentY);
+                    
+                    if (gestureResult.detected) {
+                        validateSpell(gestureResult.accuracy);
+                    }
+                }
+            }
+            
+            ctx.restore();
+        }
+
+        function detectGesture(currentX, currentY) {
+            const now = Date.now();
+            let accuracy = 0;
+            
+            if (gestureState === "WAITING") {
+                swishStartX = currentX;
+                flickStartY = currentY;
+                gestureStartTime = now;
+                maxSwish = 0;
+                maxFlick = 0;
+                gestureState = "SWISH_DETECTED";
+                updateGestureFeedback("Swish your wand horizontally", 0);
+                return { detected: false, accuracy: 0 };
+            }
+            
+            else if (gestureState === "SWISH_DETECTED") {
+                const deltaX = (currentX - swishStartX) / canvas.width;
+                maxSwish = Math.max(Math.abs(deltaX), maxSwish);
+                
+                // Update progress
+                const swishProgress = Math.min(maxSwish / SWISH_THRESHOLD, 1);
+                updateGestureFeedback("Swish your wand horizontally", swishProgress * 50);
+                
+                if (now - gestureStartTime > GESTURE_TIME_WINDOW/2) {
+                    gestureState = "FLICK_DETECTED";
+                    flickStartY = currentY;
+                    gestureStartTime = now;
+                }
+            }
+            
+            else if (gestureState === "FLICK_DETECTED") {
+                const deltaY = (currentY - flickStartY) / canvas.height;
+                maxFlick = Math.min(deltaY, maxFlick);
+                
+                // Calculate combined accuracy
+                const swishAccuracy = (maxSwish / SWISH_THRESHOLD) * 50;
+                const flickAccuracy = (Math.abs(maxFlick) / Math.abs(FLICK_THRESHOLD)) * 50;
+                accuracy = Math.min(swishAccuracy + flickAccuracy, 100);
+                
+                updateGestureFeedback("Flick your wand downward", 50 + (flickAccuracy / 2));
+                
+                if (now - gestureStartTime > GESTURE_TIME_WINDOW/2) {
+                    gestureState = "WAITING";
+                    return { detected: accuracy >= 70, accuracy };
+                }
+            }
+            
+            return { detected: false, accuracy: 0 };
+        }
+
+        function updateGestureFeedback(text, progress) {
+            document.getElementById("gestureFeedback").children[0].textContent = text;
+            document.getElementById("gestureProgress").style.width = `${progress}%`;
+        }
+        
+        function startWebcamValidation() {
+            // Show webcam modal and feedback
+            webcamModal.style.display = 'block';
+            gestureFeedback.style.display = 'block';
+            webcamTimer = 10;
+            updateWebcamTimerDisplay();
+            
+            // Initialize hand tracking
+            initHandTracking();
+            
+            // Start countdown
+            webcamInterval = setInterval(() => {
+                webcamTimer--;
+                updateWebcamTimerDisplay();
+                
+                if (webcamTimer <= 0) {
+                    validateSpell(0); // Force failure if time runs out
+                }
+            }, 1000);
+        }
+        
+        function updateWebcamTimerDisplay() {
+            webcamTimerDisplay.textContent = webcamTimer;
+        }
+        
+        function validateSpell(accuracy) {
+            clearInterval(webcamInterval);
+            
+            // Stop camera
+            if (camera) {
+                camera.stop();
+            }
+            
+            const isCorrect = selectedAnswer.getAttribute('data-correct') === 'true';
+            const spellSuccess = accuracy >= 70;
+            
+            if (spellSuccess) {
+                // Spell successful
+                successMessage.style.display = 'block';
+                
+                if (isCorrect) {
+                    playerScore += 20;
+                } else {
+                    opponentScore += 15;
+                }
+            } else {
+                // Spell failed
+                failureMessage.style.display = 'block';
+                opponentScore += 10;
+            }
+            
+            updateScores();
+            
+            // Show correct answer if wrong
+            if (!isCorrect) {
+                const answers = document.querySelectorAll('.answer-option');
+                answers.forEach(answer => {
+                    if (answer.getAttribute('data-correct') === 'true') {
+                        answer.style.backgroundColor = "var(--hufflepuff-yellow)";
+                        answer.style.color = "var(--hufflepuff-black)";
+                        answer.style.borderColor = "var(--hufflepuff-black)";
+                    }
+                });
+            }
+            
+            // Hide gesture feedback
+            gestureFeedback.style.display = 'none';
+            canvas.style.display = 'none';
+            
+            // Move to next question after delay
+            setTimeout(() => {
+                webcamModal.style.display = 'none';
+                successMessage.style.display = 'none';
+                failureMessage.style.display = 'none';
+                nextQuestion();
+            }, 3000);
+        }
+        
+        function loadQuestion(index) {
+            // Reset state
+            selectedAnswer = null;
+            isAnswerSubmitted = false;
+            castBtn.disabled = true;
+            timeLeft = 30;
+            timerDisplay.textContent = timeLeft;
+            
+            const q = questions[index];
+            questionCategory.textContent = q.category;
+            questionText.textContent = q.question;
+            
+            // Set difficulty badge
+            difficultyBadge.textContent = q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1);
+            difficultyBadge.className = `difficulty-badge ${q.difficulty}`;
+            
+            // Load answers
+            answersGrid.innerHTML = '';
+            
+            q.answers.forEach((answer, i) => {
+                const answerElement = document.createElement('div');
+                answerElement.className = 'answer-option';
+                answerElement.textContent = answer;
+                if (i === q.correct) {
+                    answerElement.setAttribute('data-correct', 'true');
+                }
+                answersGrid.appendChild(answerElement);
+            });
+            
+            // Reset all answer styles
+            const answers = document.querySelectorAll('.answer-option');
+            answers.forEach(answer => {
+                answer.style.backgroundColor = "";
+                answer.style.color = "";
+                answer.style.borderColor = "";
+                answer.style.opacity = "1";
+                answer.style.pointerEvents = "auto";
+            });
+        }
+        
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!isAnswerSubmitted) {
+                        opponentScore += 15;
+                        updateScores();
+                        nextQuestion();
+                    }
+                }
+            }, 1000);
+        }
+        
+        function updateScores() {
+            playerPoints.textContent = `${playerScore} points`;
+            opponentPoints.textContent = `${opponentScore} points`;
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion(currentQuestion);
+                startTimer();
+            } else {
+                endDuel();
+            }
+        }
+        
+        function endDuel() {
+            // Store final scores
+            localStorage.setItem('playerScore', playerScore);
+            localStorage.setItem('opponentScore', opponentScore);
+            
+            // Redirect to results page
+            window.location.href = 'results.html';
+        }
+
+        // Make webcam modal draggable
+        const modal = document.getElementById('webcamModal');
+        const header = document.getElementById('webcamHeader');
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        // Desktop drag functionality
+        header.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - modal.getBoundingClientRect().left;
+            offsetY = e.clientY - modal.getBoundingClientRect().top;
+            modal.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            modal.style.left = `${e.clientX - offsetX}px`;
+            modal.style.top = `${e.clientY - offsetY}px`;
+            modal.style.right = 'auto';
+            modal.style.bottom = 'auto';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            modal.style.cursor = 'move';
+        });
+
+        // Touch support for mobile devices
+        header.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            const touch = e.touches[0];
+            offsetX = touch.clientX - modal.getBoundingClientRect().left;
+            offsetY = touch.clientY - modal.getBoundingClientRect().top;
+            e.preventDefault(); // Prevent scrolling
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            modal.style.left = `${touch.clientX - offsetX}px`;
+            modal.style.top = `${touch.clientY - offsetY}px`;
+            modal.style.right = 'auto';
+            modal.style.bottom = 'auto';
+            e.preventDefault(); // Prevent scrolling
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>

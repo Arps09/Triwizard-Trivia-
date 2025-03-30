@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIVIZARD - Tournament Lobby</title>
+    <style>
+        :root {
+            --gryffindor-red: #740001;
+            --gryffindor-gold: #d3a625;
+            --slytherin-green: #1a472a;
+            --slytherin-silver: #aaaaaa;
+            --ravenclaw-blue: #0e1a40;
+            --ravenclaw-bronze: #946b2d;
+            --hufflepuff-yellow: #ecb939;
+            --hufflepuff-black: #372e29;
+            --hogwarts-dark: #2c2c2c;
+            --parchment: #f5e7c1;
+        }
+
+        body {
+            background-color: var(--hogwarts-dark);
+            color: var(--parchment);
+            font-family: 'Cormorant Garamond', serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(212, 175, 55, 0.1) 50px,
+                    rgba(212, 175, 55, 0.1) 51px
+                );
+        }
+        
+
+        .lobby-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        .lobby-title {
+            font-family: 'Cinzel', serif;
+            color: var(--gryffindor-gold);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .lobby-subtitle {
+            color: var(--slytherin-silver);
+            font-size: 1.2rem;
+            font-style: italic;
+        }
+
+        .duel-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .wizard-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%;
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .house-sigil {
+            font-size: 4rem;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            border: 3px solid;
+            animation: pulse 2s infinite;
+        }
+
+        .house-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .player-type {
+            font-style: italic;
+            color: var(--slytherin-silver);
+        }
+
+        .vs-badge {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--hogwarts-dark);
+            border: 3px solid var(--gryffindor-gold);
+            color: var(--gryffindor-gold);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            z-index: 10;
+        }
+
+        .matchmaking-status {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.2rem;
+        }
+
+        .searching-animation {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .searching-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 6px;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+
+        .lobby-controls {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .lobby-btn {
+            padding: 0.8rem 1.5rem;
+            font-family: 'Cinzel', serif;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+            border: 2px solid var(--ravenclaw-bronze);
+        }
+
+        .cancel-btn {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+            border: 2px solid var(--gryffindor-gold);
+        }
+
+        /* House-specific styles */
+        .gryffindor-sigil {
+            background-color: var(--gryffindor-red);
+            color: var(--gryffindor-gold);
+            border-color: var(--gryffindor-gold);
+        }
+
+        .slytherin-sigil {
+            background-color: var(--slytherin-green);
+            color: var(--slytherin-silver);
+            border-color: var(--slytherin-silver);
+        }
+
+        .ravenclaw-sigil {
+            background-color: var(--ravenclaw-blue);
+            color: var(--ravenclaw-bronze);
+            border-color: var(--ravenclaw-bronze);
+        }
+
+        .hufflepuff-sigil {
+            background-color: var(--hufflepuff-yellow);
+            color: var(--hufflepuff-black);
+            border-color: var(--hufflepuff-black);
+        }
+
+        body {
+            background: url('harrypotter.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .duel-display {
+                flex-direction: column;
+            }
+            
+            .wizard-card {
+                width: 80%;
+                margin-bottom: 2rem;
+            }
+            
+            .vs-badge {
+                position: relative;
+                margin: 1rem 0;
+                left: auto;
+                top: auto;
+                transform: none;
+            }
+        }
+    .house-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 10px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    
+    .gryffindor-icon {
+        background-image: url('https://cdn-icons-png.flaticon.com/512/3069/3069172.png');
+    }
+    
+    .slytherin-icon {
+        background-image: url('https://cdn-icons-png.flaticon.com/512/3069/3069196.png');
+    }
+    
+    .ravenclaw-icon {
+        background-image: url('https://cdn-icons-png.flaticon.com/512/3069/3069184.png');
+    }
+    
+    .hufflepuff-icon {
+        background-image: url('https://cdn-icons-png.flaticon.com/512/3069/3069209.png');
+    }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="lobby-header">
+        <h1 class="lobby-title">TRIWIZARD DUEL LOBBY</h1>
+        <p class="lobby-subtitle">Preparing your magical challenge...</p>
+    </div>
+
+    <div class="duel-display">
+        <!-- Player Card -->
+        <div class="wizard-card">
+            <div class="house-sigil" id="playerSigil"></div>
+            <h2 class="house-name" id="playerHouse">Gryffindor</h2>
+            <p class="player-type">You</p>
+        </div>
+
+        <!-- VS Badge -->
+        <div class="vs-badge">VS</div>
+
+        <!-- Opponent Card -->
+        <div class="wizard-card">
+            <div class="house-sigil" id="opponentSigil">?</div>
+            <h2 class="house-name" id="opponentHouse">Waiting...</h2>
+            <p class="player-type">Opponent</p>
+        </div>
+    </div>
+
+    <div class="matchmaking-status">
+        <p id="statusMessage">Searching for an opponent...</p>
+        <div class="searching-animation">
+            <div class="searching-dot" style="background-color: var(--gryffindor-gold);"></div>
+            <div class="searching-dot" style="background-color: var(--ravenclaw-bronze);"></div>
+            <div class="searching-dot" style="background-color: var(--slytherin-silver);"></div>
+        </div>
+    </div>
+
+    <div class="lobby-controls">
+        <button class="lobby-btn search-btn" id="searchBtn">Search Again</button>
+        <button class="lobby-btn cancel-btn" id="cancelBtn">Leave Lobby</button>
+    </div>
+
+    
+
+    <script>
+        // House data
+        const houses = {
+            gryffindor: { name: "Gryffindor", icon: "🦁", sigilClass: "gryffindor-sigil" },
+            slytherin: { name: "Slytherin", icon: "🐍", sigilClass: "slytherin-sigil" },
+            ravenclaw: { name: "Ravenclaw", icon: "🦅", sigilClass: "ravenclaw-sigil" },
+            hufflepuff: { name: "Hufflepuff", icon: "🦡", sigilClass: "hufflepuff-sigil" }
+        };
+
+        // Get player's house from localStorage
+        const playerHouse = localStorage.getItem('selectedHouse') || 'gryffindor';
+        
+        // Set player display
+        document.getElementById('playerSigil').textContent = houses[playerHouse].icon;
+        document.getElementById('playerSigil').classList.add(houses[playerHouse].sigilClass);
+        document.getElementById('playerHouse').textContent = houses[playerHouse].name;
+
+        // Matchmaking simulation
+        let searchTimeout;
+        let isSearching = true;
+
+        function startSearch() {
+            isSearching = true;
+            document.getElementById('statusMessage').textContent = "Searching for an opponent...";
+            document.querySelector('.searching-animation').style.display = "flex";
+            document.getElementById('opponentSigil').textContent = "?";
+            document.getElementById('opponentSigil').className = "house-sigil";
+            document.getElementById('opponentHouse').textContent = "Waiting...";
+            
+            // Simulate finding opponent after random delay
+            searchTimeout = setTimeout(findOpponent, 2000 + Math.random() * 3000);
+        }
+
+        function findOpponent() {
+            if (!isSearching) return;
+            
+            // Get random house (not player's house)
+            const opponentHouses = Object.keys(houses).filter(h => h !== playerHouse);
+            const opponentHouse = opponentHouses[Math.floor(Math.random() * opponentHouses.length)];
+            
+            // Display opponent
+            document.getElementById('opponentSigil').textContent = houses[opponentHouse].icon;
+            document.getElementById('opponentSigil').classList.add(houses[opponentHouse].sigilClass);
+            document.getElementById('opponentHouse').textContent = houses[opponentHouse].name;
+            
+            // Update status
+            document.getElementById('statusMessage').textContent = "Opponent found!";
+            document.querySelector('.searching-animation').style.display = "none";
+            
+            // Store opponent house
+            localStorage.setItem('opponentHouse', opponentHouse);
+            
+            // Change button behavior
+            document.getElementById('searchBtn').textContent = "Start Duel";
+            isSearching = false;
+        }
+
+        // Button event listeners
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            if (isSearching) {
+                // If already searching, do nothing
+                return;
+            } else if (this.textContent === "Start Duel") {
+                // Start the duel
+                window.location.href = "duel.html";
+            } else {
+                // Start new search
+                startSearch();
+            }
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+            clearTimeout(searchTimeout);
+            window.location.href = "duel.html";
+        });
+
+        // Start initial search
+        startSearch();
+    </script>
+</body>
+</html>
